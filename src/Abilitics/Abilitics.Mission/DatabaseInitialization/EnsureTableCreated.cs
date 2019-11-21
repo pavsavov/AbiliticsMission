@@ -13,9 +13,9 @@ namespace Abilitics.Mission.DatabaseInitialization
 	{
 		public void CreateTable()
 		{
-			var myConnectionString = @"Server=(localdb)\mssqllocaldb;Database=master;Integrated Security=True";
+			var myConnectionString = "Server=(localdb)\\mssqllocaldb;Database=AbiliticsMission;Integrated Security=True";
 			var tableName = "Nobel";
-			if (TableExists(tableName, myConnectionString))
+			if (!TableExists(tableName, myConnectionString))
 			{
 				var cmdText = SqlCommands.CreateDbTable;
 
@@ -30,6 +30,7 @@ namespace Abilitics.Mission.DatabaseInitialization
 			}
 		}
 
+
 		private static bool TableExists(string TableName, string connectionString)
 		{
 			using (SqlConnection sqlConnection = new SqlConnection(connectionString))
@@ -39,8 +40,11 @@ namespace Abilitics.Mission.DatabaseInitialization
 				DataTable dTable = sqlConnection.GetSchema("TABLES",
 							   new string[] { null, null, TableName });
 
+                sqlConnection.Close();
 				return dTable.Rows.Count > 0;
-			}
+
+
+            }
 		}
 	}
 }

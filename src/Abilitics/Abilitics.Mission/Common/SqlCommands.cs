@@ -14,13 +14,13 @@ namespace Abilitics.Mission.Common
 					Year int NOT NULL,
                     Category NVARCHAR(255) NOT NULL,
 					Name NVARCHAR(255) NOT NULL,
-					Birthdate DATETIME NULL,
+					Birthdate NVARCHAR(255) NULL,
 					Birth_Place NVARCHAR(255) NULL,
-                    Country NVARCHAR(255) NULL,
+                    County NVARCHAR(255) NULL,
                     Residence NVARCHAR(255) NULL,
                     Field_Language NVARCHAR(255) NULL,
                     Prize_Name NVARCHAR(255) NOT NULL,
-					Motivation NVARCHAR(255) NOT NULL,
+					Motivation NVARCHAR(2505) NOT NULL,
 					CONSTRAINT pk_id PRIMARY KEY(Id)
                 );";
 
