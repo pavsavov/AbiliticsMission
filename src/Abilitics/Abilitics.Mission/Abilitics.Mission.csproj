@@ -43,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\CommonConfiguration.cs" />
+    <Compile Include="Common\SqlCommands.cs" />
+    <Compile Include="DatabaseInitialization\EnsureDatabaseCreated.cs" />
+    <Compile Include="DatabaseInitialization\EnsureTableCreated.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

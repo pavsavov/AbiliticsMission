@@ -5,80 +5,52 @@ using System.Configuration;
 using System;
 using System.Data.OleDb;
 using System.Threading.Tasks;
+using Abilitics.Mission.Common;
+using Abilitics.Mission.DatabaseInitialization;
 
 namespace Abilitics.Mission
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.Write("Please, specify your .xlsx file path: ");
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			//Console.Write("Please, specify your .xlsx file path: ");
+			// var filePath = Console.ReadLine();
 
-            // var filePath = Console.ReadLine();
+			//var dbName = Console.ReadLine();
 
-            ImportToDb(/*filePath*/);
-        }
+			//var commonConfiguration = new CommonConfiguration(dbName);
+			DatabaseInitialization();
 
-        private static void ImportToDb(/*string filePath*/)
-        {
-            var filePath = @"E:\Projects\AbiliticsMission\src\Assignment.Description\";
-            //  var file = Directory.GetFiles(filePath);
+			ImportToDb(/*filePath*/);
+		}
 
-            var connectionString = @"Provider = 'Microsoft.ACE.OLEDB.12.0'; Data Source = '" + filePath + "'; Extended Properties = 'Excel 12.0 Xml;IMEX=1'";
+		private static void DatabaseInitialization()
+		{
+			var ensureDatabaseCreate = new EnsureDatabaseCreated();
+			ensureDatabaseCreate.CreateDatabase();
 
-            CreateDatabase();
+			var ensureTableCreated = new EnsureTableCreated();
+			ensureTableCreated.CreateTable();
+		}
 
-            CreateTable();
+		private static void ImportToDb(/*string filePath*/)
+		{
+			var filePath = @"D:\PavelS\Playground\AbiliticsMission\src\Assignment.Description";
+			//  var file = Directory.GetFiles(filePath);
 
-            //using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
-            //{
-            //    oleDbConnection.CreateCommand
-            //}
-        }
+			var connectionString = @"Provider = 'Microsoft.ACE.OLEDB.12.0'; Data Source = '" + filePath + "'; Extended Properties = 'Excel 12.0 Xml;IMEX=1'";
 
-        private static void CreateDatabase()
-        {
-            var myConnectionString = @"Server=(localdb)\mssqllocaldb;Database=master;Integrated Security=True";
+			var excelData = new DataTable();
 
-            using (var connection = new SqlConnection(myConnectionString))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "CREATE DATABASE AbiliticsMission";
-                command.ExecuteNonQuery();
-            }
-        }
+			using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
+			{
+				oleDbConnection.Open();
 
-        /// <summary>
-        /// Should use Async
-        /// </summary>
-        /// <returns></returns>
-        private static void CreateTable()
-        {
-            var myConnectionString = @"Server=(localdb)\mssqllocaldb;Database=master;Integrated Security=True";
+				//excelData.Columns.AddRange(new DataColumn[] { new DataColumn { "Year",typeof(int),} })
 
-            using (var connection = new SqlConnection(myConnectionString))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = @"CREATE TABLE dbo.Nobel
-                (
-                    Id int IDENTITY(1,1) NOT NULL,
-                    Year DateTime NOT NULL,
-                    Category NVARCHAR(255) NOT NULL,
-                    Name NVARCHAR(255) NOT NULL,
-                    Birthdate DATETIME NULL,
-                    Birth_Place NVARCHAR(255) NULL,
-                    Country NVARCHAR(255) NULL,
-                    Residence NVARCHAR(255) NULL,
-                    Field_Language NVARCHAR(255) NULL,
-                    Prize_Name NVARCHAR(255) NOT NULL,
-                    Motivation NVARCHAR(255) NOT NULL, 
-                    CONSTRAINT pk_id PRIMARY KEY (Id)
-                );";
-
-                command.ExecuteNonQuery();
-            }
-        }
-    }
+				var sheet = oleDbConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null).Rows[0]["TABLE_NAME"].ToString();
+			}
+		}
+	}
 }
