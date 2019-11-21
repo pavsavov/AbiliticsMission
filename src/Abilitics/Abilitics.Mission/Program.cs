@@ -67,18 +67,18 @@ namespace Abilitics.Mission
 
                 var cmdText = "SELECT * FROM [" + sheet + "]";
 
-                using (OleDbDataAdapter oleAdapter = new OleDbDataAdapter(cmdText,oleDbConnection))
+                using (OleDbDataAdapter oleAdapter = new OleDbDataAdapter(cmdText, oleDbConnection))
                 {
-                   oleAdapter.TableMappings.Add("Year", "Year");
-                   oleAdapter.TableMappings.Add("Category", "Category");
-                   oleAdapter.TableMappings.Add("Name", "Name");
-                   oleAdapter.TableMappings.Add("Birthdate", "Birthdate");
-                   oleAdapter.TableMappings.Add("Birth Place", "Birth_Place");
-                   oleAdapter.TableMappings.Add("County", "County");
-                   oleAdapter.TableMappings.Add("Residence", "Residence");
-                   oleAdapter.TableMappings.Add("Field/Language", "Field_Language");
-                   oleAdapter.TableMappings.Add("Prize Name", "Prize_Name");
-                   oleAdapter.TableMappings.Add("Motivation", "Motivation");
+                    oleAdapter.TableMappings.Add("Year", "Year");
+                    oleAdapter.TableMappings.Add("Category", "Category");
+                    oleAdapter.TableMappings.Add("Name", "Name");
+                    oleAdapter.TableMappings.Add("Birthdate", "Birthdate");
+                    oleAdapter.TableMappings.Add("Birth Place", "Birth_Place");
+                    oleAdapter.TableMappings.Add("County", "County");
+                    oleAdapter.TableMappings.Add("Residence", "Residence");
+                    oleAdapter.TableMappings.Add("Field/Language", "Field_Language");
+                    oleAdapter.TableMappings.Add("Prize Name", "Prize_Name");
+                    oleAdapter.TableMappings.Add("Motivation", "Motivation");
 
                     oleAdapter.Fill(excelData);
 
@@ -106,7 +106,15 @@ namespace Abilitics.Mission
                         sqlBulk.ColumnMappings.Add("Motivation", "Motivation");
 
                         sqlConnection.Open();
-                        sqlBulk.WriteToServer(excelData);
+                        try
+                        {
+                            sqlBulk.WriteToServer(excelData);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new UniqueConstraintViolationException("No new records found for import into database!", ex);
+                        }
                         sqlConnection.Close();
                     }
                 }

@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Common\CommonConfiguration.cs" />
     <Compile Include="Common\SqlCommands.cs" />
+    <Compile Include="Common\UniqueConstraintViolationException.cs" />
     <Compile Include="DatabaseInitialization\EnsureDatabaseCreated.cs" />
     <Compile Include="DatabaseInitialization\EnsureTableCreated.cs" />
     <Compile Include="Program.cs" />

@@ -21,7 +21,8 @@ namespace Abilitics.Mission.Common
                     Field_Language NVARCHAR(255) NULL,
                     Prize_Name NVARCHAR(255) NOT NULL,
 					Motivation NVARCHAR(2505) NOT NULL,
-					CONSTRAINT pk_id PRIMARY KEY(Id)
+					CONSTRAINT pk_id PRIMARY KEY(Id),
+                    CONSTRAINT UC_Motivation UNIQUE(Motivation,Name)
                 );";
 
 		//Will be aded dynamicly a name
