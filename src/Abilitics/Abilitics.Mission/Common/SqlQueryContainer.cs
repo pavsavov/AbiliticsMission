@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Abilitics.Mission.Common
 {
-	public class SqlCommands
+	public class SqlQueryContainer
 	{
-		public static string CreateDbTable { get; private set; } = @"CREATE TABLE dbo.Nobel
+		public SqlQueryContainer()
+		{
+
+		}
+
+		public static string CreateDbTableQuery { get; private set; } = @"CREATE TABLE dbo.Nobel
 				(
 					Id int IDENTITY(1,1) NOT NULL,
 					Year int NOT NULL,
@@ -25,8 +25,8 @@ namespace Abilitics.Mission.Common
                     CONSTRAINT UC_Motivation UNIQUE(Motivation,Name)
                 );";
 
-		//Will be aded dynamicly a name
-		public static string CreateDatabase { get; private set; } = $"SELECT database_id FROM sys.databases WHERE Name = AbiliticsMission";
+		
+		public static string CreateDatabaseQuery { get; private set; } = $"SELECT database_id FROM sys.databases WHERE Name = AbiliticsMission";
 
 	}
 }
