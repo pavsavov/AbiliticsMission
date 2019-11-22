@@ -1,14 +1,20 @@
 ﻿
+using Abilitics.Mission.Configurations;
+
 namespace Abilitics.Mission.Common
 {
 	public class SqlQueryContainer
 	{
-		public SqlQueryContainer()
-		{
+		private readonly ConfigurationModel configurations;
 
+		public SqlQueryContainer(ConfigurationModel configurations)
+		{
+			this.configurations = configurations;
 		}
 
-		public static string CreateDbTableQuery { get; private set; } = @"CREATE TABLE dbo.Nobel
+		public string CreateDbTableQuery()
+		{
+			return @"CREATE TABLE dbo.Nobel
 				(
 					Id int IDENTITY(1,1) NOT NULL,
 					Year int NOT NULL,
@@ -24,9 +30,27 @@ namespace Abilitics.Mission.Common
 					CONSTRAINT pk_id PRIMARY KEY(Id),
                     CONSTRAINT UC_Motivation UNIQUE(Motivation,Name)
                 );";
+		}
 
-		
-		public static string CreateDatabaseQuery { get; private set; } = $"SELECT database_id FROM sys.databases WHERE Name = AbiliticsMission";
+		public string CheckDatabaseExists()
+		{
+			return $"SELECT* FROM master.dbo.sysdatabases WHERE name = '{configurations.DatabaseConfiguration["DatabaseName"]}'";
+		}
+
+		public string CreateDatabaseQuery()
+		{
+			return $"CREATE DATABASE {configurations.DatabaseConfiguration["DatabaseName"]}";
+		}
+
+		public string SelectExcelFileSheet(string sheet)
+		{
+			return $"SELECT * FROM [{ sheet}]";
+		}
+
+		public string GetDestinationTable()
+		{
+			return $"[{configurations.DatabaseConfiguration["DatabaseName"]}].[dbo].[{configurations.DatabaseConfiguration["TableName"]}]";
+		}
 
 	}
 }

@@ -7,21 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Abilitics.Mission.DatabaseInitialization
+namespace Abilitics.Mission.DatabaseSetup
 {
-	public class DatabaseInitializer
+	public abstract class BaseDbEntitySetup
 	{
 		private readonly ConfigurationModel configurations;
 		private readonly SqlQueryContainer queryContainer;
 
-		public DatabaseInitializer(ConfigurationModel configurations, SqlQueryContainer queryContainer)
+		public BaseDbEntitySetup(ConfigurationModel configurations, SqlQueryContainer queryContainer)
 		{
 			this.configurations = configurations;
 			this.queryContainer = queryContainer;
 		}
 
-		public void CreateDatabase()
+		public virtual void CreateEntity()
 		{
+			//TODO:move to sqlquerycontainer
 			var commandText = queryContainer.CreateDatabaseQuery();
 			var connectionString = this.configurations.ConnectionStrings["DefaultConnection"];
 
@@ -33,28 +34,6 @@ namespace Abilitics.Mission.DatabaseInitialization
 					var rowsAffected = sqlCommand.ExecuteNonQuery();
 				}
 			}
-		}
-
-		public bool CheckDatabaseExists()
-		{
-			//TODO:move to sqlquerycontainer
-			string commandText = queryContainer.CheckDatabaseExists();
-			var connectionString = this.configurations.ConnectionStrings["DefaultConnection"];
-
-			bool exists = false;
-			using (SqlConnection sqlConnection = new SqlConnection(connectionString))
-			{
-				sqlConnection.Open();
-				using (SqlCommand cmd = new SqlCommand(commandText, sqlConnection))
-				{
-					using (SqlDataReader reader = cmd.ExecuteReader())
-					{
-						exists = reader.HasRows;
-					}
-				}
-				sqlConnection.Close();
-			}
-			return exists;
 		}
 	}
 }

@@ -20,14 +20,21 @@ namespace Abilitics.Mission
 			//Load application configurations from ApplicationConfig.json file
 			var configBuilder = new AppConfigurationBuilder(configFilePath);
 			var configurations = configBuilder.LoadJsonConfigFile();
+			var sqlQueryContainer = new SqlQueryContainer(configurations);
 
 			if (configurations == null)
 			{
-				Console.WriteLine("JSON loader was not able to map data from configuration file. Check file path!");
+				Console.WriteLine("JSON loader was not able to map data from configuration file. Check configuration file's path!");
+			};
+
+			if(sqlQueryContainer == null)
+			{
+				Console.WriteLine("Initializing SqlQueryContainer encountered problem. Check configuration file's path!");
 			};
 
 			//Ensure database is created.
-			var databaseInitializer = new DatabaseInitializer(configurations.ConnectionStrings["DefaultConnection"], configurations.DatabaseConfiguration["DatabaseName"]);
+			var databaseInitializer = new DatabaseInitializer(configurations,sqlQueryContainer)
+				);
 
 			if (!databaseInitializer.CheckDatabaseExists())
 			{
@@ -72,6 +79,7 @@ namespace Abilitics.Mission
 
 				excelData.Columns.AddRange(columns);
 
+				//TODO:move to sqlcontainer
 				var cmdText = "SELECT * FROM [" + sheet + "]";
 
 				using (OleDbDataAdapter oleAdapter = new OleDbDataAdapter(cmdText, oleDbConnection))
@@ -79,7 +87,7 @@ namespace Abilitics.Mission
 					oleAdapter.TableMappings.Add("Year", "Year");
 					oleAdapter.TableMappings.Add("Category", "Category");
 					oleAdapter.TableMappings.Add("Name", "Name");
-					oleAdapter.TableMappings.Add("Birthdate", "Birthdate");
+					oleAdapter.TableMappings.Add("Birthdate", "Birthdate"); //temp
 					oleAdapter.TableMappings.Add("Birth Place", "Birth_Place");
 					oleAdapter.TableMappings.Add("County", "County");
 					oleAdapter.TableMappings.Add("Residence", "Residence");
@@ -97,6 +105,7 @@ namespace Abilitics.Mission
 				{
 					using (SqlBulkCopy sqlBulk = new SqlBulkCopy(sqlConnection))
 					{
+						//TODO:move to sqlcontainer
 						sqlBulk.DestinationTableName = "[AbiliticsMission].[dbo].Nobel";
 
 						//Mapping db table columns with Excel columns
