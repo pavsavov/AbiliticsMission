@@ -1,16 +1,18 @@
-	{
-		"ConnectionStrings": {
-			"DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=master;Integrated Security=True",
-			"ApplicationConnection": "Server=(localdb)\\mssqllocaldb;Database=AbiliticsMission;Integrated Security=True"
-		},
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=master;Integrated Security=True",
+    "ApplicationConnection": "Server=(localdb)\\mssqllocaldb;Database=AbiliticsMission;Integrated Security=True"
+  },
 
-		"DatabaseConfiguration": {
-			"TableName": "Nobel",
-			"DatabaseName": "AbiliticsMission"
-		},
+  "DatabaseConfiguration": {
+    "TableName": "Nobel",
+    "DatabaseName": "AbiliticsMission"
+  },
 
-		"ExcelFileConfiguration": {
-			"FileConnection": "Provider='Microsoft.ACE.OLEDB.12.0';Data Source='E:\\Projects\\AbiliticsMission\\src\\Assignment.Description\\Nobel_Prize_Winners.xlsx';Extended Properties ='Excel 12.0 Xml;IMEX=1"
-		}
-	}
+  "ExcelFileConfiguration": {
+    "FileConnection": "Provider = 'Microsoft.ACE.OLEDB.12.0'; Data Source = 'E:\\Projects\\AbiliticsMission\\src\\Assignment.Description\\Nobel_Prize_Winners.xlsx';Extended Properties = 'Excel 12.0 Xml;IMEX=1'"
 
+  }
+}
+
+  //"Provider = 'Microsoft.ACE.OLEDB.12.0'; Data Source = 'E:\\Projects\\AbiliticsMission\\src\\Assignment.Description\\Nobel_Prize_Winners.xlsx'; Extended Properties = 'Excel 12.0 Xml;IMEX=1'";

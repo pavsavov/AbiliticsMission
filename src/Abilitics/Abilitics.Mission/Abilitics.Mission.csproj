@@ -72,7 +72,6 @@
     <Compile Include="Common\UniqueConstraintViolationException.cs" />
     <Compile Include="Configurations\AppConfigurationBuilder.cs" />
     <Compile Include="Configurations\ConfigurationModel.cs" />
-    <Compile Include="DatabaseSetup\BaseDbEntitySetup.cs" />
     <Compile Include="DatabaseSetup\DatabaseInitializer.cs" />
     <Compile Include="DatabaseSetup\TableCreator.cs" />
     <Compile Include="Program.cs" />
