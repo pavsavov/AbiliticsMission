@@ -6,47 +6,61 @@ using System.Data.SqlClient;
 
 namespace Abilitics.Mission.DatabaseInitialization
 {
-	public class TableCreator
-	{
-		private readonly ConfigurationModel configurations;
-		private readonly SqlQueryContainer queryContainer;
+    public class TableCreator
+    {
+        private readonly ConfigurationModel configurations;
+        private readonly SqlQueryContainer queryContainer;
+        private readonly string tableType;
 
-		public TableCreator(ConfigurationModel configurations, SqlQueryContainer queryContainer)
-		{
-			this.configurations = configurations;
-			this.queryContainer = queryContainer;
-		}
+        public TableCreator(ConfigurationModel configurations, SqlQueryContainer queryContainer,string tableType)
+        {
+            this.configurations = configurations;
+            this.queryContainer = queryContainer;
+            this.tableType = tableType;
+        }
 
-		public void CreateTable()
-		{
-			var commandText = queryContainer.CreateDbTableQuery();
-			var appConnectionString = configurations.ConnectionStrings["ApplicationConnection"];
+        public void CreateTable()
+        {
+            string commandText = "";
 
-			using (var sqlConnection = new SqlConnection(appConnectionString))
-			{
-				using (var sqlCommand = new SqlCommand(commandText, sqlConnection))
-				{
-					sqlConnection.Open();
-					var result = sqlCommand.ExecuteNonQuery();
-				}
-			}
-		}
+            if (this.tableType == "MainTable")
+            {
+                commandText = queryContainer.CreateDbTableQuery();
+            }
 
-		public bool TableExists()
-		{
-			var appConnectionString = configurations.ConnectionStrings["ApplicationConnection"];
-			var tableName = configurations.DatabaseConfiguration["TableName"];
+            if(this.tableType == "StagingTable")
+            {
+                commandText = queryContainer.CreateStagingTable();
 
-			using (SqlConnection sqlConnection = new SqlConnection(appConnectionString))
-			{
-				sqlConnection.Open();
+            }
 
-				DataTable dTable = sqlConnection.GetSchema("TABLES", new string[] { null, null, tableName });
+            var appConnectionString = configurations.ConnectionStrings["ApplicationConnection"];
 
-				sqlConnection.Close();
-				return dTable.Rows.Count > 0;
-			}
-		}
-	}
+            using (var sqlConnection = new SqlConnection(appConnectionString))
+            {
+                using (var sqlCommand = new SqlCommand(commandText, sqlConnection))
+                {
+                    sqlConnection.Open();
+                    var result = sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public bool TableExists()
+        {
+            var appConnectionString = configurations.ConnectionStrings["ApplicationConnection"];
+            var tableName = configurations.DatabaseConfiguration[this.tableType];
+
+            using (SqlConnection sqlConnection = new SqlConnection(appConnectionString))
+            {
+                sqlConnection.Open();
+
+                DataTable dTable = sqlConnection.GetSchema("TABLES", new string[] { null, null, tableName });
+
+                sqlConnection.Close();
+                return dTable.Rows.Count > 0;
+            }
+        }
+    }
 }
 

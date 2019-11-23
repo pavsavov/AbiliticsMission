@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using Abilitics.Mission.Common;
 using Abilitics.Mission.DatabaseInitialization;
 using Abilitics.Mission.Configurations;
+using System.Linq;
 
 namespace Abilitics.Mission
 {
@@ -41,11 +42,17 @@ namespace Abilitics.Mission
             }
 
             //Ensure Table is created.
-            var tableCreator = new TableCreator(configurations, sqlQueryContainer);
+            var mainTableGenerator = new TableCreator(configurations, sqlQueryContainer, "MainTable");
+            var stagingTableGenerator = new TableCreator(configurations, sqlQueryContainer, "StagingTable");
 
-            if (!tableCreator.TableExists())
+            if (!mainTableGenerator.TableExists())
             {
-                tableCreator.CreateTable();
+                mainTableGenerator.CreateTable();
+            }
+
+            if (!stagingTableGenerator.TableExists())
+            {
+                stagingTableGenerator.CreateTable();
             }
 
             //Import or Update data in database table.I
@@ -103,7 +110,7 @@ namespace Abilitics.Mission
                 {
                     using (SqlBulkCopy sqlBulk = new SqlBulkCopy(sqlConnection))
                     {
-                        sqlBulk.DestinationTableName = sqlQueryContainer.GetDestinationTable();
+                        sqlBulk.DestinationTableName = configurations.DatabaseConfiguration["StagingTable"];
 
                         //Mapping db table columns with Excel columns
                         sqlBulk.ColumnMappings.Add("Year", "Year");
@@ -118,20 +125,27 @@ namespace Abilitics.Mission
                         sqlBulk.ColumnMappings.Add("Motivation", "Motivation");
 
                         sqlConnection.Open();
+
                         try
                         {
-                            sqlBulk.WriteToServer(excelData);
+                            DataTable distinctTable = excelData.DefaultView.ToTable(true);
+                            sqlBulk.WriteToServer(distinctTable);
 
+                            using (var sqlCommand = new SqlCommand(sqlQueryContainer.InsertUniqueValuesIntoMainTable(), sqlConnection))
+                            {
+                                sqlCommand.ExecuteNonQuery();
+                            }
                         }
+
                         catch (Exception ex)
                         {
-                            throw new UniqueConstraintViolationException("No new records found for import into database!", ex);
+                            Console.WriteLine(ex.Message);
                         }
-
-                        sqlConnection.Close();
-
-                        Console.WriteLine(ApplicationOutput());
                     }
+
+                    sqlConnection.Close();
+
+                    Console.WriteLine(ApplicationOutput());
                 }
             }
         }
@@ -148,3 +162,5 @@ namespace Abilitics.Mission
         }
     }
 }
+
+

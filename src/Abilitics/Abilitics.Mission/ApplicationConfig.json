@@ -5,7 +5,8 @@
   },
 
   "DatabaseConfiguration": {
-    "TableName": "Nobel",
+    "StagingTable": "am_NobelStaging",
+    "MainTable": "am_Nobel",
     "DatabaseName": "AbiliticsMission"
   },
 
