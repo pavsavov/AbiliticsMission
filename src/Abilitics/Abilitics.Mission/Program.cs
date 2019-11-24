@@ -1,5 +1,4 @@
-﻿
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 using System;
 using System.Data.OleDb;
@@ -8,7 +7,6 @@ using Abilitics.Mission.DatabaseInitialization;
 using Abilitics.Mission.Configurations;
 using System.Linq;
 using System.Globalization;
-using System.IO;
 
 namespace Abilitics.Mission
 {
@@ -52,7 +50,19 @@ namespace Abilitics.Mission
                 mainTableGenerator.CreateDatabaseEntity();
             }
 
-            ImportToDb(configurations, sqlQueryContainer);
+            try
+            {
+                ImportToDb(configurations, sqlQueryContainer);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                ApplicationOutput();
+            }
+
         }
 
 
@@ -71,7 +81,7 @@ namespace Abilitics.Mission
                     new DataColumn("Year",typeof(int)),
                     new DataColumn("Category",typeof(string)),
                     new DataColumn("Name",typeof(string)),
-                    new DataColumn("Birthdate",typeof(string)), //temp
+                    new DataColumn("Birthdate",typeof(DateTime)), 
 					new DataColumn("Birth Place",typeof(string)),
                     new DataColumn("County",typeof(string)),
                     new DataColumn("Residence",typeof(string)),
@@ -89,7 +99,7 @@ namespace Abilitics.Mission
                     oleAdapter.TableMappings.Add("Year", "Year");
                     oleAdapter.TableMappings.Add("Category", "Category");
                     oleAdapter.TableMappings.Add("Name", "Name");
-                    oleAdapter.TableMappings.Add("Birthdate", "Birthdate"); //temp
+                    oleAdapter.TableMappings.Add("Birthdate", "Birthdate"); 
                     oleAdapter.TableMappings.Add("Birth Place", "Birth Place");
                     oleAdapter.TableMappings.Add("County", "County");
                     oleAdapter.TableMappings.Add("Residence", "Residence");
@@ -102,19 +112,21 @@ namespace Abilitics.Mission
                 }
 
                 oleDbConnection.Close();
-
+                
+                //Connect to database in order to transfer data from the DataTable type object,loaded with data from .xlsx fil.
                 using (SqlConnection sqlConnection = new SqlConnection(configurations.ConnectionStrings["ApplicationConnection"]))
                 {
-                  
                     var queryAllDataInDb = sqlQueryContainer.GetDataFromDbTable();
+                    var connectionString = configurations.ConnectionStrings["ApplicationConnection"];
 
-                    var currentDataInDb = PullData(configurations.ConnectionStrings["ApplicationConnection"], queryAllDataInDb);
+                    var currentDataInDb = PullData(connectionString, queryAllDataInDb);
 
                     var rows = currentDataInDb.Rows.Count > 0;
 
                     if (rows)
                     {
-                        var truncateTableQuery = "TRUNCATE TABLE [dbo].[am_Nobel]";
+                        var truncateTableQuery = sqlQueryContainer.TruncateTable();
+
                         using (SqlCommand command = new SqlCommand(truncateTableQuery, sqlConnection))
                         {
                             sqlConnection.Open();
@@ -170,6 +182,7 @@ namespace Abilitics.Mission
                 }
             }
         }
+
         #region UtilityMethods
 
         private static DataTable PullData(string connectionString, string query)
@@ -197,27 +210,31 @@ namespace Abilitics.Mission
         }
 
         /// <summary>
-        /// Formats the dateTime according to input values;
+        /// Formats the incomming date-time.
         /// </summary>
-        /// <param name="excelValue"></param>
-        /// <returns></returns>
-
+        /// <param name="excelValue">date-time value from excel file</param>
         private static DateTime? DateFormatter(object excelDateValue, int rowCounter)
         {
             DateTime dateTime;
             try
             {
-                var result = Convert.ToDateTime(excelDateValue).ToString("dd-MMM-y");
+                CultureInfo culture = new CultureInfo("en-US");
 
-                if (DateTime.TryParseExact(result, "dd-MMM-y", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out dateTime))
+                var excelValueAsDateTimeTemp = Convert.ToDateTime(excelDateValue);
+                var formatedDateTime = Convert.ToDateTime(excelDateValue).ToString("dd-MMM-y");
+
+                var getYearAsFourDigits = culture.Calendar.ToFourDigitYear(excelValueAsDateTimeTemp.Year);
+
+                if (DateTime.TryParseExact(formatedDateTime, "dd-MMM-y", culture, DateTimeStyles.None, out dateTime))
                 {
-                    return dateTime;
+                    var resultNewDate = new DateTime(getYearAsFourDigits, dateTime.Month, dateTime.Day);
+                    return resultNewDate;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Import process was not successful! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
-                                  $"Please provide row value in the following valid format: 'DD-MMM-YY'");
+                Console.WriteLine($"Import process was interupted! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
+                                  $"Please provide row value in the following valid date-time format: 'DD-MMM-YY'");
                 throw;
             }
 

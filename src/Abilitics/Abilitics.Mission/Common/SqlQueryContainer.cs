@@ -31,25 +31,10 @@ namespace Abilitics.Mission.Common
                 );";
         }
 
-    //    public string CreateStagingTable()
-    //    {
-    //        return @"CREATE TABLE dbo.am_NobelStaging
-				//(
-				//	Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
-				//	Year int NULL,
-    //                Category NVARCHAR(255) NOT NULL,
-				//	Name NVARCHAR(255) NOT NULL,
-				//	Birthdate NVARCHAR(255) NULL,
-				//	Birth_Place NVARCHAR(255) NULL,
-    //                County NVARCHAR(255) NULL,
-    //                Residence NVARCHAR(255) NULL,
-    //                Field_Language NVARCHAR(255) NULL,
-    //                Prize_Name NVARCHAR(255)  NULL,
-				//	Motivation NVARCHAR(2505) NOT NULL,
-				//	CONSTRAINT pk_id_staging PRIMARY KEY(Id),
-    //                CONSTRAINT UC_Motivation_staging UNIQUE(Motivation,Name,Category)
-    //            );";
-    //    }
+        public string TruncateTable()
+        {
+            return $"TRUNCATE TABLE[dbo].[{configurations.DatabaseConfiguration["TableName"]}]";
+        }
 
         public string CheckDatabaseExists()
         {
