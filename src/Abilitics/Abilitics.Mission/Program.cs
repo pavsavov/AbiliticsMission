@@ -153,29 +153,27 @@ namespace Abilitics.Mission
                     //check if table is populated
                     sqlConnection.Open();
                     DataTable dTable = sqlConnection.GetSchema("TABLES",
-                  new string[] { null, null, "am_Nobel" });
+                                new string[] { null, null, "am_Nobel" });
 
                     var rows = dTable.Rows.Count > 1;
                     string query = "";
                     if (rows)
                     {
+                        // define INSERT query with parameters
                         query = "UPDATE [dbo].[am_Nobel] " +
-    "           SET [Year]=@Year," +
-    "               [Category]=@Category," +
-    "               [Name]=@Name," +
-    "               [Birthdate]=@Birthdate," +
-    "               [Birth Place]=@BirthPlace," +
-    "               [County]=@County," +
-    "               [Residence]=@Residence," +
-    "               [Field/Language]=@FieldLanguage," +
-    "               [Prize Name]=@PrizeName," +
-    "               [Motivation]=@Motivation ";
+                           "           SET [Year]=@Year," +
+                           "               [Category]=@Category," +
+                           "               [Name]=@Name," +
+                           "               [Birthdate]=@Birthdate," +
+                           "               [Birth Place]=@BirthPlace," +
+                           "               [County]=@County," +
+                           "               [Residence]=@Residence," +
+                           "               [Field/Language]=@FieldLanguage," +
+                           "               [Prize Name]=@PrizeName," +
+                           "               [Motivation]=@Motivation ";
                     }
                     else
                     {
-
-
-
                         // define INSERT query with parameters
                         query = "INSERT INTO [dbo].[am_Nobel] " +
                            "           ([Year]," +
@@ -198,15 +196,15 @@ namespace Abilitics.Mission
 
                             // define parameters and their values
                             command.Parameters.Add("@Year", SqlDbType.Int).Value = (int)row.ItemArray[0];
-                            command.Parameters.Add("@Category", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? "" : (string)row.ItemArray[1];
-                            command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? "" : (string)row.ItemArray[2];
-                            command.Parameters.Add("@Birthdate", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? "" : (string)row.ItemArray[3];
-                            command.Parameters.Add("@BirthPlace", SqlDbType.NVarChar, 255).Value = row.ItemArray[4] is DBNull ? "" : (string)row.ItemArray[4];
-                            command.Parameters.Add("@County", SqlDbType.NVarChar, 255).Value = row.ItemArray[5] is DBNull ? "" : (string)row.ItemArray[5];
-                            command.Parameters.Add("@Residence", SqlDbType.NVarChar, 255).Value = row.ItemArray[6] is DBNull ? "" : (string)row.ItemArray[6];
-                            command.Parameters.Add("@FieldLanguage", SqlDbType.NVarChar, 255).Value = row.ItemArray[7] is DBNull ? "" : (string)row.ItemArray[7];
-                            command.Parameters.Add("@PrizeName", SqlDbType.NVarChar, 255).Value = row.ItemArray[8] is DBNull ? "" : (string)row.ItemArray[8];
-                            command.Parameters.Add("@Motivation", SqlDbType.NVarChar, 255).Value = row.ItemArray[9] is DBNull ? "" : (string)row.ItemArray[9];
+                            command.Parameters.Add("@Category", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[1];
+                            command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[2];
+                            command.Parameters.Add("@Birthdate", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[3];
+                            command.Parameters.Add("@BirthPlace", SqlDbType.NVarChar, 255).Value = row.ItemArray[4] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[4];
+                            command.Parameters.Add("@County", SqlDbType.NVarChar, 255).Value = row.ItemArray[5] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[5];
+                            command.Parameters.Add("@Residence", SqlDbType.NVarChar, 255).Value = row.ItemArray[6] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[6];
+                            command.Parameters.Add("@FieldLanguage", SqlDbType.NVarChar, 255).Value = row.ItemArray[7] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[7];
+                            command.Parameters.Add("@PrizeName", SqlDbType.NVarChar, 255).Value = row.ItemArray[8] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[8];
+                            command.Parameters.Add("@Motivation", SqlDbType.NVarChar, 255).Value = row.ItemArray[9] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[9];
 
                             // open connection, execute UPDATE, close connection
                             sqlConnection.Close();
