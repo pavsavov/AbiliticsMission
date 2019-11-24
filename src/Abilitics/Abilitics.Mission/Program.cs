@@ -128,9 +128,9 @@ namespace Abilitics.Mission
 
                     //    sqlConnection.Open();
                     //    // -------------------------UPDATE ZONE --------------------------------
-                    //    var queryAllDataInDb = sqlQueryContainer.GetDataFromDbTable();
+                    var queryAllDataInDb = sqlQueryContainer.GetDataFromDbTable();
 
-                    //    var currentDataInDb = PullData(configurations.ConnectionStrings["ApplicationConnection"], queryAllDataInDb);
+                    var currentDataInDb = PullData(configurations.ConnectionStrings["ApplicationConnection"], queryAllDataInDb);
 
                     //    //map columns for compare
                     //    DataView dbView = new DataView(currentDataInDb);
@@ -151,43 +151,35 @@ namespace Abilitics.Mission
 
                     //}
                     //check if table is populated
-                    sqlConnection.Open();
-                    DataTable dTable = sqlConnection.GetSchema("TABLES",
-                                new string[] { null, null, "am_Nobel" });
 
-                    var rows = dTable.Rows.Count > 1;
-                    string query = "";
+
+                    var rows = currentDataInDb.Rows.Count > 0;
+
                     if (rows)
                     {
-                        // define INSERT query with parameters
-                        query = "UPDATE [dbo].[am_Nobel] " +
-                           "           SET [Year]=@Year," +
-                           "               [Category]=@Category," +
-                           "               [Name]=@Name," +
-                           "               [Birthdate]=@Birthdate," +
-                           "               [Birth Place]=@BirthPlace," +
-                           "               [County]=@County," +
-                           "               [Residence]=@Residence," +
-                           "               [Field/Language]=@FieldLanguage," +
-                           "               [Prize Name]=@PrizeName," +
-                           "               [Motivation]=@Motivation ";
+                        var truncateTableQuery = "TRUNCATE TABLE [dbo].[am_Nobel]";
+                        using (SqlCommand command = new SqlCommand(truncateTableQuery, sqlConnection))
+                        {
+                            sqlConnection.Open();
+                            command.ExecuteNonQuery();
+                            sqlConnection.Close();
+                        }
                     }
-                    else
-                    {
-                        // define INSERT query with parameters
-                        query = "INSERT INTO [dbo].[am_Nobel] " +
-                           "           ([Year]," +
-                           "               [Category]," +
-                           "               [Name]," +
-                           "               [Birthdate]," +
-                           "               [Birth Place]," +
-                           "               [County]," +
-                           "               [Residence]," +
-                           "               [Field/Language]," +
-                           "               [Prize Name]," +
-                           "               [Motivation])" +
-                           "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
-                    }
+
+                    // define INSERT query with parameters
+                    string query = "INSERT INTO [dbo].[am_Nobel] " +
+                        "           ([Year]," +
+                        "               [Category]," +
+                        "               [Name]," +
+                        "               [Birthdate]," +
+                        "               [Birth Place]," +
+                        "               [County]," +
+                        "               [Residence]," +
+                        "               [Field/Language]," +
+                        "               [Prize Name]," +
+                        "               [Motivation])" +
+                        "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
+
                     // create command
                     using (SqlCommand command = new SqlCommand(query, sqlConnection))
                     {
