@@ -12,7 +12,7 @@ namespace Abilitics.Mission.Common
             this.configurations = configurations;
         }
 
-        public string CreateDbTableQuery()
+        public string CreateTableQuery()
         {
             return @"CREATE TABLE dbo.am_Nobel
 				(

@@ -18,7 +18,7 @@ namespace Abilitics.Mission.Configurations
 		{
 			var jsonFile = File.ReadAllText(this.filePath);
 
-			ConfigurationModel configModel = JsonConvert.DeserializeObject<ConfigurationModel>(jsonFile);
+			var configModel = JsonConvert.DeserializeObject<ConfigurationModel>(jsonFile);
 
 			return configModel;
 		}

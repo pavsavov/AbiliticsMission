@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿
+using System.Data;
 using System.Data.SqlClient;
 using System;
 using System.Data.OleDb;
@@ -6,8 +7,8 @@ using Abilitics.Mission.Common;
 using Abilitics.Mission.DatabaseInitialization;
 using Abilitics.Mission.Configurations;
 using System.Linq;
-using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace Abilitics.Mission
 {
@@ -38,26 +39,19 @@ namespace Abilitics.Mission
             //Ensure database is created.
             var databaseInitializer = new DatabaseInitializer(configurations, sqlQueryContainer);
 
-            if (!databaseInitializer.CheckDatabaseExists())
+            if (!databaseInitializer.CheckDatabaseEntityExists())
             {
-                databaseInitializer.CreateDatabase();
+                databaseInitializer.CreateDatabaseEntity();
             }
 
             //Ensure Table is created.
-            var mainTableGenerator = new TableCreator(configurations, sqlQueryContainer, "MainTable");
-            //var stagingTableGenerator = new TableCreator(configurations, sqlQueryContainer, "StagingTable");
+            var mainTableGenerator = new TableInitializer(configurations, sqlQueryContainer);
 
-            if (!mainTableGenerator.TableExists())
+            if (!mainTableGenerator.CheckDatabaseEntityExists())
             {
-                mainTableGenerator.CreateTable();
+                mainTableGenerator.CreateDatabaseEntity();
             }
 
-            //if (!stagingTableGenerator.TableExists())
-            //{
-            //    stagingTableGenerator.CreateTable();
-            //}
-
-            //Import or Update data in database table.I
             ImportToDb(configurations, sqlQueryContainer);
         }
 
@@ -111,48 +105,10 @@ namespace Abilitics.Mission
 
                 using (SqlConnection sqlConnection = new SqlConnection(configurations.ConnectionStrings["ApplicationConnection"]))
                 {
-                    ////using (SqlBulkCopy sqlBulk = new SqlBulkCopy(sqlConnection))
-                    //{
-                    //    sqlBulk.DestinationTableName = configurations.DatabaseConfiguration["MainTable"];
-
-                    //    //Mapping db table columns with Excel columns
-                    //    sqlBulk.ColumnMappings.Add("Year", "Year");
-                    //    sqlBulk.ColumnMappings.Add("Category", "Category");
-                    //    sqlBulk.ColumnMappings.Add("Name", "Name");
-                    //    sqlBulk.ColumnMappings.Add("Birthdate", "Birthdate");
-                    //    sqlBulk.ColumnMappings.Add("Birth Place", "Birth Place");
-                    //    sqlBulk.ColumnMappings.Add("County", "County");
-                    //    sqlBulk.ColumnMappings.Add("Residence", "Residence");
-                    //    sqlBulk.ColumnMappings.Add("Field/Language", "Field/Language");
-                    //    sqlBulk.ColumnMappings.Add("Prize Name", "Prize Name");
-                    //    sqlBulk.ColumnMappings.Add("Motivation", "Motivation");
-
-                    //    sqlConnection.Open();
-                    //    // -------------------------UPDATE ZONE --------------------------------
+                  
                     var queryAllDataInDb = sqlQueryContainer.GetDataFromDbTable();
 
                     var currentDataInDb = PullData(configurations.ConnectionStrings["ApplicationConnection"], queryAllDataInDb);
-
-                    //    //map columns for compare
-                    //    DataView dbView = new DataView(currentDataInDb);
-                    //    DataTable distinctDbData = dbView.ToTable(true, new string[] { "Year", "Category", "Name", "Birthdate", "Birth Place", "County", "Residence", "Field/Language", "Prize Name", "Motivation" });
-
-                    //    //data from excel file - ensure only unique records to be persisted
-                    //    DataView excelView = new DataView(excelData);
-                    //    DataTable distinctExcel = excelView.ToTable(true, new string[] { "Year", "Category", "Name", "Birthdate", "Birth Place", "County", "Residence", "Field/Language", "Prize Name", "Motivation" });
-
-                    //    //var distinctDbSet = new HashSet<DataRow>();
-                    //    //var distinctExcelSet = new HashSet<DataRow>();
-                    //    //var updatedRecords = new HashSet<DataRow>();
-
-
-                    //    sqlBulk.(distinctExcel);
-
-                    //    // -------------------------UPDATE ZONE --------------------------------
-
-                    //}
-                    //check if table is populated
-
 
                     var rows = currentDataInDb.Rows.Count > 0;
 
@@ -216,17 +172,6 @@ namespace Abilitics.Mission
         }
         #region UtilityMethods
 
-        /// <summary>
-        /// Sets and returns the Console application's output
-        /// </summary>
-        /// <returns>Application's source code as a string</returns>
-        private static string ApplicationOutput()
-        {
-            var result = "";
-
-            return result;
-        }
-
         private static DataTable PullData(string connectionString, string query)
         {
             var dataTable = new DataTable();
@@ -272,16 +217,23 @@ namespace Abilitics.Mission
             catch (Exception ex)
             {
                 Console.WriteLine($"Import process was not successful! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
-                                  $"Please provde row value in the following valid format: 'DD-MMM-YY'");
+                                  $"Please provide row value in the following valid format: 'DD-MMM-YY'");
                 throw;
             }
-            //finally
-            //{
-            //    Console.WriteLine($"Success! The imported dateTime type value is in correct format.");
-            //}
 
             return dateTime;
 
+        }
+
+        /// <summary>
+        /// Sets and returns the Console application's output
+        /// </summary>
+        /// <returns>Application's source code as a string</returns>
+        private static string ApplicationOutput()
+        {
+            var result = "";
+
+            return result;
         }
         #endregion
     }
