@@ -23,16 +23,16 @@ namespace Abilitics.Mission.DatabaseInitialization
         {
             string commandText = "";
 
-            if (this.tableType == "MainTable")
-            {
+            //if (this.tableType == "MainTable")
+            //{
                 commandText = queryContainer.CreateDbTableQuery();
-            }
+            
 
-            if(this.tableType == "StagingTable")
-            {
-                commandText = queryContainer.CreateStagingTable();
+            //if(this.tableType == "StagingTable")
+            //{
+            //    commandText = queryContainer.CreateStagingTable();
 
-            }
+            //}
 
             var appConnectionString = configurations.ConnectionStrings["ApplicationConnection"];
 

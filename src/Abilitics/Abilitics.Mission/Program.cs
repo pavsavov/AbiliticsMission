@@ -6,6 +6,7 @@ using Abilitics.Mission.Common;
 using Abilitics.Mission.DatabaseInitialization;
 using Abilitics.Mission.Configurations;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Abilitics.Mission
 {
@@ -43,21 +44,22 @@ namespace Abilitics.Mission
 
             //Ensure Table is created.
             var mainTableGenerator = new TableCreator(configurations, sqlQueryContainer, "MainTable");
-            var stagingTableGenerator = new TableCreator(configurations, sqlQueryContainer, "StagingTable");
+            //var stagingTableGenerator = new TableCreator(configurations, sqlQueryContainer, "StagingTable");
 
             if (!mainTableGenerator.TableExists())
             {
                 mainTableGenerator.CreateTable();
             }
 
-            if (!stagingTableGenerator.TableExists())
-            {
-                stagingTableGenerator.CreateTable();
-            }
+            //if (!stagingTableGenerator.TableExists())
+            //{
+            //    stagingTableGenerator.CreateTable();
+            //}
 
             //Import or Update data in database table.I
             ImportToDb(configurations, sqlQueryContainer);
         }
+
 
         private static void ImportToDb(ConfigurationModel configurations, SqlQueryContainer sqlQueryContainer)
         {
@@ -93,11 +95,11 @@ namespace Abilitics.Mission
                     oleAdapter.TableMappings.Add("Category", "Category");
                     oleAdapter.TableMappings.Add("Name", "Name");
                     oleAdapter.TableMappings.Add("Birthdate", "Birthdate"); //temp
-                    oleAdapter.TableMappings.Add("Birth Place", "Birth_Place");
+                    oleAdapter.TableMappings.Add("Birth Place", "Birth Place");
                     oleAdapter.TableMappings.Add("County", "County");
                     oleAdapter.TableMappings.Add("Residence", "Residence");
-                    oleAdapter.TableMappings.Add("Field/Language", "Field_Language");
-                    oleAdapter.TableMappings.Add("Prize Name", "Prize_Name");
+                    oleAdapter.TableMappings.Add("Field/Language", "Field/Language");
+                    oleAdapter.TableMappings.Add("Prize Name", "Prize Name");
                     oleAdapter.TableMappings.Add("Motivation", "Motivation");
 
                     oleAdapter.Fill(excelData);
@@ -108,47 +110,120 @@ namespace Abilitics.Mission
 
                 using (SqlConnection sqlConnection = new SqlConnection(configurations.ConnectionStrings["ApplicationConnection"]))
                 {
-                    using (SqlBulkCopy sqlBulk = new SqlBulkCopy(sqlConnection))
+                    ////using (SqlBulkCopy sqlBulk = new SqlBulkCopy(sqlConnection))
+                    //{
+                    //    sqlBulk.DestinationTableName = configurations.DatabaseConfiguration["MainTable"];
+
+                    //    //Mapping db table columns with Excel columns
+                    //    sqlBulk.ColumnMappings.Add("Year", "Year");
+                    //    sqlBulk.ColumnMappings.Add("Category", "Category");
+                    //    sqlBulk.ColumnMappings.Add("Name", "Name");
+                    //    sqlBulk.ColumnMappings.Add("Birthdate", "Birthdate");
+                    //    sqlBulk.ColumnMappings.Add("Birth Place", "Birth Place");
+                    //    sqlBulk.ColumnMappings.Add("County", "County");
+                    //    sqlBulk.ColumnMappings.Add("Residence", "Residence");
+                    //    sqlBulk.ColumnMappings.Add("Field/Language", "Field/Language");
+                    //    sqlBulk.ColumnMappings.Add("Prize Name", "Prize Name");
+                    //    sqlBulk.ColumnMappings.Add("Motivation", "Motivation");
+
+                    //    sqlConnection.Open();
+                    //    // -------------------------UPDATE ZONE --------------------------------
+                    //    var queryAllDataInDb = sqlQueryContainer.GetDataFromDbTable();
+
+                    //    var currentDataInDb = PullData(configurations.ConnectionStrings["ApplicationConnection"], queryAllDataInDb);
+
+                    //    //map columns for compare
+                    //    DataView dbView = new DataView(currentDataInDb);
+                    //    DataTable distinctDbData = dbView.ToTable(true, new string[] { "Year", "Category", "Name", "Birthdate", "Birth Place", "County", "Residence", "Field/Language", "Prize Name", "Motivation" });
+
+                    //    //data from excel file - ensure only unique records to be persisted
+                    //    DataView excelView = new DataView(excelData);
+                    //    DataTable distinctExcel = excelView.ToTable(true, new string[] { "Year", "Category", "Name", "Birthdate", "Birth Place", "County", "Residence", "Field/Language", "Prize Name", "Motivation" });
+
+                    //    //var distinctDbSet = new HashSet<DataRow>();
+                    //    //var distinctExcelSet = new HashSet<DataRow>();
+                    //    //var updatedRecords = new HashSet<DataRow>();
+
+
+                    //    sqlBulk.(distinctExcel);
+
+                    //    // -------------------------UPDATE ZONE --------------------------------
+
+                    //}
+                    //check if table is populated
+                    sqlConnection.Open();
+                    DataTable dTable = sqlConnection.GetSchema("TABLES",
+                  new string[] { null, null, "am_Nobel" });
+
+                    var rows = dTable.Rows.Count > 1;
+                    string query = "";
+                    if (rows)
                     {
-                        sqlBulk.DestinationTableName = configurations.DatabaseConfiguration["StagingTable"];
+                        query = "UPDATE [dbo].[am_Nobel] " +
+    "           SET [Year]=@Year," +
+    "               [Category]=@Category," +
+    "               [Name]=@Name," +
+    "               [Birthdate]=@Birthdate," +
+    "               [Birth Place]=@BirthPlace," +
+    "               [County]=@County," +
+    "               [Residence]=@Residence," +
+    "               [Field/Language]=@FieldLanguage," +
+    "               [Prize Name]=@PrizeName," +
+    "               [Motivation]=@Motivation ";
+                    }
+                    else
+                    {
 
-                        //Mapping db table columns with Excel columns
-                        sqlBulk.ColumnMappings.Add("Year", "Year");
-                        sqlBulk.ColumnMappings.Add("Category", "Category");
-                        sqlBulk.ColumnMappings.Add("Name", "Name");
-                        sqlBulk.ColumnMappings.Add("Birthdate", "Birthdate");
-                        sqlBulk.ColumnMappings.Add("Birth Place", "Birth_Place");
-                        sqlBulk.ColumnMappings.Add("County", "County");
-                        sqlBulk.ColumnMappings.Add("Residence", "Residence");
-                        sqlBulk.ColumnMappings.Add("Field/Language", "Field_Language");
-                        sqlBulk.ColumnMappings.Add("Prize Name", "Prize_Name");
-                        sqlBulk.ColumnMappings.Add("Motivation", "Motivation");
 
-                        sqlConnection.Open();
 
-                        try
+                        // define INSERT query with parameters
+                        query = "INSERT INTO [dbo].[am_Nobel] " +
+                           "           ([Year]," +
+                           "               [Category]," +
+                           "               [Name]," +
+                           "               [Birthdate]," +
+                           "               [Birth Place]," +
+                           "               [County]," +
+                           "               [Residence]," +
+                           "               [Field/Language]," +
+                           "               [Prize Name]," +
+                           "               [Motivation])" +
+                           "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
+                    }
+                    // create command
+                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    {
+                        foreach (var row in excelData.AsEnumerable())
                         {
-                            DataTable distinctTable = excelData.DefaultView.ToTable(true);
-                            sqlBulk.WriteToServer(distinctTable);
 
-                            using (var sqlCommand = new SqlCommand(sqlQueryContainer.InsertUniqueValuesIntoMainTable(), sqlConnection))
-                            {
-                                sqlCommand.ExecuteNonQuery();
-                            }
-                        }
+                            // define parameters and their values
+                            command.Parameters.Add("@Year", SqlDbType.Int).Value = (int)row.ItemArray[0];
+                            command.Parameters.Add("@Category", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? "" : (string)row.ItemArray[1];
+                            command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? "" : (string)row.ItemArray[2];
+                            command.Parameters.Add("@Birthdate", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? "" : (string)row.ItemArray[3];
+                            command.Parameters.Add("@BirthPlace", SqlDbType.NVarChar, 255).Value = row.ItemArray[4] is DBNull ? "" : (string)row.ItemArray[4];
+                            command.Parameters.Add("@County", SqlDbType.NVarChar, 255).Value = row.ItemArray[5] is DBNull ? "" : (string)row.ItemArray[5];
+                            command.Parameters.Add("@Residence", SqlDbType.NVarChar, 255).Value = row.ItemArray[6] is DBNull ? "" : (string)row.ItemArray[6];
+                            command.Parameters.Add("@FieldLanguage", SqlDbType.NVarChar, 255).Value = row.ItemArray[7] is DBNull ? "" : (string)row.ItemArray[7];
+                            command.Parameters.Add("@PrizeName", SqlDbType.NVarChar, 255).Value = row.ItemArray[8] is DBNull ? "" : (string)row.ItemArray[8];
+                            command.Parameters.Add("@Motivation", SqlDbType.NVarChar, 255).Value = row.ItemArray[9] is DBNull ? "" : (string)row.ItemArray[9];
 
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
+                            // open connection, execute UPDATE, close connection
+                            sqlConnection.Close();
+                            sqlConnection.Open();
+                            command.ExecuteNonQuery();
+                            sqlConnection.Close();
+
+                            command.Parameters.Clear();
+
                         }
                     }
-
-                    sqlConnection.Close();
 
                     Console.WriteLine(ApplicationOutput());
                 }
             }
         }
+        #region UtilityMethods
 
         /// <summary>
         /// Sets and returns the Console application's output
@@ -160,6 +235,38 @@ namespace Abilitics.Mission
 
             return result;
         }
+
+        private static DataTable PullData(string connectionString, string query)
+        {
+            var dataTable = new DataTable();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection))
+                {
+                    sqlConnection.Open();
+
+                    using (SqlDataAdapter dbAdapter = new SqlDataAdapter(sqlCommand))
+                    {
+                        dbAdapter.Fill(dataTable);
+
+                        sqlConnection.Close();
+
+                        dbAdapter.Dispose();
+                    }
+                }
+            }
+
+            return dataTable;
+        }
+
+        //private static DataTable NewRecordsDiscriminator(ConfigurationModel configurations,
+        //    DataTable excelData, SqlQueryContainer sqlQueryContainer)
+        //{
+
+        //}
+
+        #endregion
     }
 }
 

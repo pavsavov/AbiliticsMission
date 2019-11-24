@@ -17,40 +17,40 @@ namespace Abilitics.Mission.Common
             return @"CREATE TABLE dbo.am_Nobel
 				(
 					Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
-					Year int NULL,
-                    Category NVARCHAR(255) NOT NULL,
-					Name NVARCHAR(255) NOT NULL,
-					Birthdate NVARCHAR(255) NULL,
-					Birth_Place NVARCHAR(255) NULL,
-                    County NVARCHAR(255) NULL,
-                    Residence NVARCHAR(255) NULL,
-                    Field_Language NVARCHAR(255) NULL,
-                    Prize_Name NVARCHAR(255)  NULL,
-					Motivation NVARCHAR(2505) NOT NULL,
+					[Year] int NULL,
+                    [Category] NVARCHAR(255) NOT NULL,
+					[Name] NVARCHAR(255) NOT NULL,
+					[Birthdate] NVARCHAR(255) NULL,
+					[Birth Place] NVARCHAR(255) NULL,
+                    [County] NVARCHAR(255) NULL,
+                    [Residence] NVARCHAR(255) NULL,
+                    [Field/Language] NVARCHAR(255) NULL,
+                    [Prize Name] NVARCHAR(255)  NULL,
+					[Motivation] NVARCHAR(2505) NOT NULL,
 					CONSTRAINT pk_id PRIMARY KEY(Id),
-                    CONSTRAINT UC_Motivation UNIQUE(Motivation,Name,Category)
+
                 );";
         }
 
-        public string CreateStagingTable()
-        {
-            return @"CREATE TABLE dbo.am_NobelStaging
-				(
-					Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
-					Year int NULL,
-                    Category NVARCHAR(255) NOT NULL,
-					Name NVARCHAR(255) NOT NULL,
-					Birthdate NVARCHAR(255) NULL,
-					Birth_Place NVARCHAR(255) NULL,
-                    County NVARCHAR(255) NULL,
-                    Residence NVARCHAR(255) NULL,
-                    Field_Language NVARCHAR(255) NULL,
-                    Prize_Name NVARCHAR(255)  NULL,
-					Motivation NVARCHAR(2505) NOT NULL,
-					CONSTRAINT pk_id_staging PRIMARY KEY(Id),
-                    CONSTRAINT UC_Motivation_staging UNIQUE(Motivation,Name,Category)
-                );";
-        }
+    //    public string CreateStagingTable()
+    //    {
+    //        return @"CREATE TABLE dbo.am_NobelStaging
+				//(
+				//	Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
+				//	Year int NULL,
+    //                Category NVARCHAR(255) NOT NULL,
+				//	Name NVARCHAR(255) NOT NULL,
+				//	Birthdate NVARCHAR(255) NULL,
+				//	Birth_Place NVARCHAR(255) NULL,
+    //                County NVARCHAR(255) NULL,
+    //                Residence NVARCHAR(255) NULL,
+    //                Field_Language NVARCHAR(255) NULL,
+    //                Prize_Name NVARCHAR(255)  NULL,
+				//	Motivation NVARCHAR(2505) NOT NULL,
+				//	CONSTRAINT pk_id_staging PRIMARY KEY(Id),
+    //                CONSTRAINT UC_Motivation_staging UNIQUE(Motivation,Name,Category)
+    //            );";
+    //    }
 
         public string CheckDatabaseExists()
         {
@@ -77,12 +77,12 @@ namespace Abilitics.Mission.Common
             return $"SELECT * FROM [dbo].[{configurations.DatabaseConfiguration["MainTable"]}]";
         }
 
-        public string InsertUniqueValuesIntoMainTable()
-        {
+        //public string InsertUniqueValuesIntoMainTable()
+        //{
 
-            return $"INSERT INTO {configurations.DatabaseConfiguration["MainTable"]}(Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation) " +
-                   $"SELECT Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation FROM {configurations.DatabaseConfiguration["StagingTable "]}"+ 
-                   $"TRUNCATE TABLE {configurations.DatabaseConfiguration["StagingTable"]}";
-        }
+        //    return $"INSERT INTO {configurations.DatabaseConfiguration["MainTable"]}(Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation) " +
+        //           $"SELECT Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation FROM {configurations.DatabaseConfiguration["StagingTable "]}"+ 
+        //           $"TRUNCATE TABLE {configurations.DatabaseConfiguration["StagingTable"]}";
+        //}
     }
 }
