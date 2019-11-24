@@ -18,17 +18,16 @@ namespace Abilitics.Mission.Common
 				(
 					Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
 					[Year] int NULL,
-                    [Category] NVARCHAR(255) NOT NULL,
-					[Name] NVARCHAR(255) NOT NULL,
-					[Birthdate] NVARCHAR(255) NULL,
+                    [Category] NVARCHAR(255) NULL,
+					[Name] NVARCHAR(255) NULL,
+					[Birthdate] DATETIME NULL,
 					[Birth Place] NVARCHAR(255) NULL,
                     [County] NVARCHAR(255) NULL,
                     [Residence] NVARCHAR(255) NULL,
                     [Field/Language] NVARCHAR(255) NULL,
                     [Prize Name] NVARCHAR(255)  NULL,
-					[Motivation] NVARCHAR(2505) NOT NULL,
+					[Motivation] NVARCHAR(2505) NULL,
 					CONSTRAINT pk_id PRIMARY KEY(Id),
-
                 );";
         }
 

@@ -7,6 +7,7 @@ using Abilitics.Mission.DatabaseInitialization;
 using Abilitics.Mission.Configurations;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Abilitics.Mission
 {
@@ -179,18 +180,18 @@ namespace Abilitics.Mission
                         "               [Prize Name]," +
                         "               [Motivation])" +
                         "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
-
+                    int rowCounter = 1;
                     // create command
                     using (SqlCommand command = new SqlCommand(query, sqlConnection))
                     {
                         foreach (var row in excelData.AsEnumerable())
                         {
-
+                            rowCounter++;
                             // define parameters and their values
-                            command.Parameters.Add("@Year", SqlDbType.Int).Value = (int)row.ItemArray[0];
+                            command.Parameters.Add("@Year", SqlDbType.Int).Value = row.ItemArray[0] is DBNull ? (object)DBNull.Value : (int)row.ItemArray[0];
                             command.Parameters.Add("@Category", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[1];
                             command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[2];
-                            command.Parameters.Add("@Birthdate", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[3];
+                            command.Parameters.Add("@Birthdate", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? (object)DBNull.Value : DateFormatter(row.ItemArray[3], rowCounter);
                             command.Parameters.Add("@BirthPlace", SqlDbType.NVarChar, 255).Value = row.ItemArray[4] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[4];
                             command.Parameters.Add("@County", SqlDbType.NVarChar, 255).Value = row.ItemArray[5] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[5];
                             command.Parameters.Add("@Residence", SqlDbType.NVarChar, 255).Value = row.ItemArray[6] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[6];
@@ -250,12 +251,38 @@ namespace Abilitics.Mission
             return dataTable;
         }
 
-        //private static DataTable NewRecordsDiscriminator(ConfigurationModel configurations,
-        //    DataTable excelData, SqlQueryContainer sqlQueryContainer)
-        //{
+        /// <summary>
+        /// Formats the dateTime according to input values;
+        /// </summary>
+        /// <param name="excelValue"></param>
+        /// <returns></returns>
 
-        //}
+        private static DateTime? DateFormatter(object excelDateValue, int rowCounter)
+        {
+            DateTime dateTime;
+            try
+            {
+                var result = Convert.ToDateTime(excelDateValue).ToString("dd-MMM-y");
 
+                if (DateTime.TryParseExact(result, "dd-MMM-y", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out dateTime))
+                {
+                    return dateTime;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Import process was not successful! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
+                                  $"Please provde row value in the following valid format: 'DD-MMM-YY'");
+                throw;
+            }
+            //finally
+            //{
+            //    Console.WriteLine($"Success! The imported dateTime type value is in correct format.");
+            //}
+
+            return dateTime;
+
+        }
         #endregion
     }
 }
