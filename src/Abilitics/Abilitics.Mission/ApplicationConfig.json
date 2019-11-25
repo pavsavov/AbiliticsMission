@@ -1,5 +1,5 @@
 {
-  //Set your connection strings
+  //Set your connection strings.DefaultConnection string is used upon new Database initialization only.
   "ConnectionStrings": {
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=master;Integrated Security=True",
     "ApplicationConnection": "Server=(localdb)\\mssqllocaldb;Database=AbiliticsMission;Integrated Security=True"
@@ -10,6 +10,7 @@
     "DatabaseName": "AbiliticsMission"
   },
 
+  //Set your connection string, provided to OleDbConnection.Edit 'Data Source' which is the path to .xlsx file.
   "ExcelFileConfiguration": {
     "FileConnection": "Provider = 'Microsoft.ACE.OLEDB.12.0'; Data Source = 'E:\\Projects\\AbiliticsMission\\src\\Assignment.Description\\Nobel_Prize_Winners.xlsx';Extended Properties = 'Excel 12.0 Xml;IMEX=1'"
   }

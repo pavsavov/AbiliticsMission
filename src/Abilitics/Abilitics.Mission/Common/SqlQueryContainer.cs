@@ -14,7 +14,7 @@ namespace Abilitics.Mission.Common
 
         public string CreateTableQuery()
         {
-            return @"CREATE TABLE dbo.am_Nobel
+            return $@"CREATE TABLE dbo.[{configurations.DatabaseConfiguration["MainTable"]}]
 				(
 					Id UNIQUEIDENTIFIER DEFAULT NEWID() NOT NULL,
 					[Year] int NULL,
@@ -31,9 +31,25 @@ namespace Abilitics.Mission.Common
                 );";
         }
 
+        public string InsertRecordsInTable()
+        {
+            return $"INSERT INTO[dbo].[{configurations.DatabaseConfiguration["MainTable"]}] " +
+                        "           ([Year]," +
+                        "               [Category]," +
+                        "               [Name]," +
+                        "               [Birthdate]," +
+                        "               [Birth Place]," +
+                        "               [County]," +
+                        "               [Residence]," +
+                        "               [Field/Language]," +
+                        "               [Prize Name]," +
+                        "               [Motivation])" +
+                        "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
+        }
+
         public string TruncateTable()
         {
-            return $"TRUNCATE TABLE[dbo].[{configurations.DatabaseConfiguration["TableName"]}]";
+            return $"TRUNCATE TABLE[dbo].[{configurations.DatabaseConfiguration["MainTable"]}]";
         }
 
         public string CheckDatabaseExists()
@@ -51,22 +67,12 @@ namespace Abilitics.Mission.Common
             return $"SELECT * FROM [{ sheet}]";
         }
 
-        public string GetStagingTable()
-        {
-            return $"[{configurations.DatabaseConfiguration["DatabaseName"]}].[dbo].[{configurations.DatabaseConfiguration["StagingTable"]}]";
-        }
-
         public string GetDataFromDbTable()
         {
             return $"SELECT * FROM [dbo].[{configurations.DatabaseConfiguration["MainTable"]}]";
         }
 
-        //public string InsertUniqueValuesIntoMainTable()
-        //{
+        //Table columns and sql parameters
 
-        //    return $"INSERT INTO {configurations.DatabaseConfiguration["MainTable"]}(Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation) " +
-        //           $"SELECT Id,Year,Category,Name,Birthdate,Birth_Place,County,Residence,Field_Language,Prize_Name,Motivation FROM {configurations.DatabaseConfiguration["StagingTable "]}"+ 
-        //           $"TRUNCATE TABLE {configurations.DatabaseConfiguration["StagingTable"]}";
-        //}
     }
 }

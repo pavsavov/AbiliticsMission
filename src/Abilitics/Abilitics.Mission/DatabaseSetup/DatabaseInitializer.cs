@@ -27,9 +27,9 @@ namespace Abilitics.Mission.DatabaseInitialization
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (SqlCommand cmd = new SqlCommand(commandText, sqlConnection))
+                using (SqlCommand command = new SqlCommand(commandText, sqlConnection))
                 {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
                         exists = reader.HasRows;
                     }

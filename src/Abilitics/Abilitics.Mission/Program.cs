@@ -65,12 +65,17 @@ namespace Abilitics.Mission
 
         }
 
-
+        /// <summary>
+        /// Read and Write from excel to DB
+        /// </summary>
+        /// <param name="configurations"></param>
+        /// <param name="sqlQueryContainer"></param>
         private static void ImportToDb(ConfigurationModel configurations, SqlQueryContainer sqlQueryContainer)
         {
             var excelData = new DataTable();
+            var oleDbConnectionString = configurations.ExcelFileConfiguration["FileConnection"];
 
-            using (OleDbConnection oleDbConnection = new OleDbConnection(configurations.ExcelFileConfiguration["FileConnection"]))
+            using (OleDbConnection oleDbConnection = new OleDbConnection(oleDbConnectionString))
             {
                 oleDbConnection.Open();
 
@@ -136,26 +141,17 @@ namespace Abilitics.Mission
                     }
 
                     // define INSERT query with parameters
-                    string query = "INSERT INTO [dbo].[am_Nobel] " +
-                        "           ([Year]," +
-                        "               [Category]," +
-                        "               [Name]," +
-                        "               [Birthdate]," +
-                        "               [Birth Place]," +
-                        "               [County]," +
-                        "               [Residence]," +
-                        "               [Field/Language]," +
-                        "               [Prize Name]," +
-                        "               [Motivation])" +
-                        "VALUES(@Year,@Category,@Name,@Birthdate,@BirthPlace,@County,@Residence,@FieldLanguage,@PrizeName,@Motivation) ";
+                    string query = sqlQueryContainer.InsertRecordsInTable();
+                    
+                    //count excel file rows;
                     int rowCounter = 1;
-                    // create command
+
                     using (SqlCommand command = new SqlCommand(query, sqlConnection))
                     {
                         foreach (var row in excelData.AsEnumerable())
                         {
                             rowCounter++;
-                            // define parameters and their values
+
                             command.Parameters.Add("@Year", SqlDbType.Int).Value = row.ItemArray[0] is DBNull ? (object)DBNull.Value : (int)row.ItemArray[0];
                             command.Parameters.Add("@Category", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[1];
                             command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[2];
@@ -167,7 +163,6 @@ namespace Abilitics.Mission
                             command.Parameters.Add("@PrizeName", SqlDbType.NVarChar, 255).Value = row.ItemArray[8] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[8];
                             command.Parameters.Add("@Motivation", SqlDbType.NVarChar, 255).Value = row.ItemArray[9] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[9];
 
-                            // open connection, execute UPDATE, close connection
                             sqlConnection.Close();
                             sqlConnection.Open();
                             command.ExecuteNonQuery();
