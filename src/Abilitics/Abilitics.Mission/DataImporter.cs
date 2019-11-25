@@ -218,7 +218,7 @@ namespace Abilitics.Mission
             catch (Exception ex)
             {
                 Console.WriteLine($"Import process was interupted! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
-                                  $"Please provide row value in the following valid date-time format: 'DD-MMM-YY'");
+                                  $"Please provide row value in valid date-time format: e.g.'DD-MMM-YY'");
                 throw;
             }
 
