@@ -57,7 +57,7 @@ namespace Abilitics.Mission
                     new DataColumn($"{this.sqlQueryContainer.Year}",typeof(int)),
                     new DataColumn($"{this.sqlQueryContainer.Category}",typeof(string)),
                     new DataColumn($"{this.sqlQueryContainer.Name}",typeof(string)),
-                    new DataColumn($"{this.sqlQueryContainer.Birthdate}",typeof(DateTime)),
+                    new DataColumn($"{this.sqlQueryContainer.Birthdate}",typeof(string)),
                     new DataColumn($"{this.sqlQueryContainer.BirthPlace}",typeof(string)),
                     new DataColumn($"{this.sqlQueryContainer.County}",typeof(string)),
                     new DataColumn($"{this.sqlQueryContainer.Residence}",typeof(string)),
@@ -139,10 +139,16 @@ namespace Abilitics.Mission
                     {
                         rowCounter++;
 
+                        if (rowCounter == 514)
+                        {
+                            Console.WriteLine("514");
+                            Console.ReadKey();
+                        }
+
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Year)}", SqlDbType.Int).Value = row.ItemArray[0] is DBNull ? (object)DBNull.Value : (int)row.ItemArray[0];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Category)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[1];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Name)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[2];
-                        command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Birthdate)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[3] is DBNull ? (object)DBNull.Value : DateFormatter(row.ItemArray[3], rowCounter);
+                        command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Birthdate)}", SqlDbType.DateTime).Value = row.ItemArray[3] is DBNull ? (object)DBNull.Value : DateFormatter(row.ItemArray[3], rowCounter);
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.BirthPlace)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[4] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[4];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.County)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[5] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[5];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Residence)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[6] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[6];
@@ -204,24 +210,24 @@ namespace Abilitics.Mission
             {
                 CultureInfo culture = new CultureInfo("en-US");
 
-                var excelValueAsDateTimeTemp = Convert.ToDateTime(excelDateValue);
+                var excelValueAsDateTimeTemp = Convert.ToDateTime(excelDateValue).Year;
                 var formatedDateTime = Convert.ToDateTime(excelDateValue).ToString("dd-MMM-y");
 
-                var getYearAsFourDigits = culture.Calendar.ToFourDigitYear(excelValueAsDateTimeTemp.Year);
+                var getYearAsFourDigits = culture.Calendar.ToFourDigitYear(excelValueAsDateTimeTemp);
 
-                if (DateTime.TryParseExact(formatedDateTime, "dd-MMM-y", culture, DateTimeStyles.None, out dateTime))
+                if (DateTime.TryParseExact(formatedDateTime, new string[2] { "dd MMMM YYYY", "dd-MMM-y" }, culture, DateTimeStyles.None, out dateTime))
                 {
                     var resultNewDate = new DateTime(getYearAsFourDigits, dateTime.Month, dateTime.Day);
+
                     return resultNewDate;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Import process was interupted! Invalid data format in column 'Birthdate' at row {rowCounter}. " +
-                                  $"Please provide row value in valid date-time format: e.g.'DD-MMM-YY'");
+                                  $"Please provide row value in valid date-time format: e.g.'DD-MMM-YY'\r\n\r\nException:\r\n\r\n");
                 throw;
             }
-
             return dateTime;
 
         }
