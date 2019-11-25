@@ -6,3 +6,4 @@ In order to use the application,please make the following initial configurations
 2. The first line of code(above Main method inside Program.cs), set the path to your ApplicationConfig.json file.
 
 Use .xlsx file in this repository as means to test Import functionality. It has only valid data.
+For other testing scenarios, use original version of the file.
