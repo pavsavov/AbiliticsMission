@@ -13,7 +13,7 @@ namespace Abilitics.Mission
     class Program
     {
         /// <summary>
-        /// Set your path to the ApplicationConfig.json configuration file.
+        /// Set your path to the ApplicationConfig.json configuration file as shown in the example.
         /// </summary>
         private const string configFilePath = @"E:\Projects\AbiliticsMission\src\Abilitics\Abilitics.Mission\ApplicationConfig.json";
 
