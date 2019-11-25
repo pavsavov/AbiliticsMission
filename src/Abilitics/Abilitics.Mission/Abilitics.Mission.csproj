@@ -68,12 +68,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationOutput.cs" />
     <Compile Include="Common\SqlQueryContainer.cs" />
     <Compile Include="Configurations\AppConfigurationBuilder.cs" />
     <Compile Include="Configurations\ConfigurationModel.cs" />
     <Compile Include="DatabaseSetup\DatabaseInitializer.cs" />
     <Compile Include="DatabaseSetup\Initializer.cs" />
     <Compile Include="DatabaseSetup\TableInitializer.cs" />
+    <Compile Include="DataImporter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
