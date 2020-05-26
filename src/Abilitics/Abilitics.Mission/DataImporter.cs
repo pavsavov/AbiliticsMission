@@ -139,12 +139,6 @@ namespace Abilitics.Mission
                     {
                         rowCounter++;
 
-                        if (rowCounter == 514)
-                        {
-                            Console.WriteLine("514");
-                            Console.ReadKey();
-                        }
-
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Year)}", SqlDbType.Int).Value = row.ItemArray[0] is DBNull ? (object)DBNull.Value : (int)row.ItemArray[0];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Category)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[1] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[1];
                         command.Parameters.Add($"@{nameof(this.sqlQueryContainer.Name)}", SqlDbType.NVarChar, 255).Value = row.ItemArray[2] is DBNull ? (object)DBNull.Value : (string)row.ItemArray[2];
